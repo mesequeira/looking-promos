@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LookingPromos.SharedKernel.Contracts\LookingPromos.SharedKernel.Contracts.csproj" />
+      <ProjectReference Include="..\LookingPromos.SharedKernel\LookingPromos.SharedKernel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Galicia\Entities\" />
+    </ItemGroup>
+
+</Project>

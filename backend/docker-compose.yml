@@ -1,0 +1,16 @@
+services:
+  lookingpromos.webapi:
+    image: ${DOCKER_REGISTRY-}lookingpromoswebapi
+    build:
+      context: .
+      dockerfile: LookingPromos.WebApi/Dockerfile
+
+  lookingpromos.worker:
+    image: ${DOCKER_REGISTRY-}lookingpromosworker
+    build:
+      context: .
+      dockerfile: LookingPromos.Worker/Dockerfile
+  rabbitmq:
+    image: "rabbitmq:management"
+  sqlserverdb:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
