@@ -12,5 +12,3 @@ services:
       dockerfile: LookingPromos.Worker/Dockerfile
   rabbitmq:
     image: "rabbitmq:management"
-  sqlserverdb:
-    image: "mcr.microsoft.com/mssql/server:2022-latest"

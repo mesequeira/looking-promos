@@ -25,6 +25,6 @@ public static class PersistenceServicesRegistration
         services.AddScoped<IStoreRepository, StoreRepository>();
         
         
-        services.AddDbContext(configuration);
+        services.IntegrateDatabaseContext();
     }
 }

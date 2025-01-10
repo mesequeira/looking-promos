@@ -6,6 +6,7 @@ using LookingPromos.SharedKernel.Domain.Networks.Entities;
 using LookingPromos.SharedKernel.Domain.ProviderErrors.Constants;
 using LookingPromos.SharedKernel.Domain.ProviderErrors.Entities;
 using LookingPromos.SharedKernel.Models;
+using MongoDB.Bson;
 
 namespace LookingPromos.SharedKernel.Domain.Stores.Entities;
 
@@ -13,12 +14,12 @@ public class Store : Entity
 {
     public string Name { get; set; } = default!;
     public long ExternalStoreId { get; set; }
-    public long CategoryId { get; set; }
+    public ObjectId CategoryId { get; set; } = default!;
     public virtual Category Category { get; set; } = default!;
     
     public static Result<(IEnumerable<Store>?, ProviderError?)> Create(
         Result<IEnumerable<IStoreResponse>> response,
-        long categoryId
+        ObjectId categoryId
     )
     {
         // If the status code is higher than 300, we determine that the response got an error.

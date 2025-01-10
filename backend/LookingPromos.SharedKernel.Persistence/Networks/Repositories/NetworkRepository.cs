@@ -10,8 +10,5 @@ internal sealed class NetworkRepository(
     ApplicationDbContext context
 ) : Repository<Network>(context), INetworkRepository
 {
-    public async Task<List<Network>> GetAllAsync(CancellationToken cancellationToken)
-    {
-        return await context.Networks.ToListAsync(cancellationToken);
-    }
+    
 }

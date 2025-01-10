@@ -1,10 +1,7 @@
-﻿using System.Data;
-using System.Net;
-using AutoMapper;
+﻿using System.Net;
 using ClaLookingPromos.SharedKernel.Contracts.Categories.Events;
 using ClaLookingPromos.SharedKernel.Contracts.Categories.Interfaces;
 using ClaLookingPromos.SharedKernel.Contracts.Galicia.Requests;
-using ClaLookingPromos.SharedKernel.Contracts.Galicia.Responses;
 using ClaLookingPromos.SharedKernel.Contracts.Stores;
 using LookingPromos.SharedKernel.Domain.Categories.Entities;
 using LookingPromos.SharedKernel.Domain.Categories.Repositories;
@@ -17,26 +14,22 @@ using LookingPromos.SharedKernel.Domain.Stores.Entities;
 using LookingPromos.SharedKernel.Domain.Stores.Repositories;
 using LookingPromos.SharedKernel.Models;
 using MassTransit;
-using MediatR;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 
 namespace LookingPromos.SharedKernel.Infrastructure.Galicia.Strategies;
 
 public class GaliciaStrategy(
     IGaliciaService galiciaService,
-    IUnitOfWork unitOfWork,
     ICategoryRepository categoryRepository,
     IStoreRepository storeRepository,
+    IUnitOfWork unitOfWork,
     IBus publisher,
     ILogger<GaliciaStrategy> logger
 ) : INetworkStrategy
 {
     public async Task<bool> GetNetworkPromotionsAsync(CancellationToken cancellationToken = default)
     {
-        using IDbTransaction transaction = await unitOfWork.BeginTransactionAsync(
-            cancellationToken
-        );
-
         try
         {
             Result<IEnumerable<ICategoryResponse>> getCategoriesResponse = await galiciaService
@@ -46,7 +39,7 @@ public class GaliciaStrategy(
 
             Result<(IEnumerable<Category>?, ProviderError?)> categoriesResult = Category.Create(
                 getCategoriesResponse,
-                (long)NetworkVariants.Galicia
+                ObjectId.Parse(NetworkVariants.Galicia)
             );
 
             if (categoriesResult is { IsFailure: true, HttpStatusCode: > HttpStatusCode.MultipleChoices } ||
@@ -54,29 +47,25 @@ public class GaliciaStrategy(
             {
                 logger.LogError(
                     "Fuimos a buscar las categorías en la red Galicia, pero ocurrió un error conectándonos al servicio.");
-                transaction.Rollback();
                 return false;
             }
 
             IEnumerable<Category> categories = categoriesResult.Value.Item1.ToList();
 
-            if (await categoryRepository.MergeAsync(categories, cancellationToken))
-            {
-                var events = categories
-                    .Select(category => new CategoryCreatedEvent(category.Id));
-                
-                await publisher.PublishBatch(events, cancellationToken);
-            }
+            await categoryRepository.InsertAsync(categories, cancellationToken);
+            
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
+            var events = categories
+                .Select(category => new CategoryCreatedEvent(category.Id.ToString()));
 
-            transaction.Commit();
+            await publisher.PublishBatch(events, cancellationToken);
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
                 "Mientras intentábamos sincronizar los nuevos datos de las categorías y tiendas en la red Galicia, ocurrió un error. {ex}",
                 ex);
-            transaction.Rollback();
         }
 
         return false;
@@ -87,7 +76,7 @@ public class GaliciaStrategy(
     {
         try
         {
-            var request = new GetGaliciaStoresRequest(category.ProviderCategoryId);
+            var request = new GetGaliciaStoresRequest(category.ProviderCategoryId ?? 0);
 
             Result<IEnumerable<IStoreResponse>> getStoresResponse = await galiciaService
                 .GetStoresAsync(request, cancellationToken)
@@ -109,12 +98,9 @@ public class GaliciaStrategy(
 
             IEnumerable<Store> stores = storesResult.Value.Item1.ToList();
 
-            if (!await storeRepository.MergeAsync(stores, cancellationToken))
-            {
-                logger.LogError(
-                    "Mientras intentábamos sincronizar los nuevos datos de las tiendas de la categoría {categoryId} en la red Galicia, ocurrió un error.",
-                    category.Id);
-            }
+            await storeRepository.InsertAsync(stores, cancellationToken);
+            
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex)
         {

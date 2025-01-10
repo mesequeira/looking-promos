@@ -6,20 +6,24 @@ using LookingPromos.SharedKernel.Domain.ProviderErrors.Constants;
 using LookingPromos.SharedKernel.Domain.ProviderErrors.Entities;
 using LookingPromos.SharedKernel.Domain.Stores.Entities;
 using LookingPromos.SharedKernel.Models;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace LookingPromos.SharedKernel.Domain.Categories.Entities;
 
 public class Category : Entity
 {
-    public string Name { get; set; } = default!;
-    public long ProviderCategoryId { get; set; }
-    public long NetworkId { get; set; }
-    public Network Network { get; set; } = default!;
+    public string? Name { get; set; }
+    
+    public long? ProviderCategoryId { get; set; }
+    
+    public ObjectId? NetworkId { get; set; }
+    public Network? Network { get; set; }
     public ICollection<Store> Stores { get; set; } = new List<Store>();
 
     public static Result<(IEnumerable<Category>?, ProviderError?)> Create(
         Result<IEnumerable<ICategoryResponse>> response,
-        long networkId
+        ObjectId networkId
     )
     {
         // If the status code is higher than 300, we determine that the response got an error.

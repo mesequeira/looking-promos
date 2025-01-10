@@ -5,6 +5,7 @@ using LookingPromos.SharedKernel.Domain.Networks.Factories;
 using LookingPromos.SharedKernel.Domain.Networks.Repositories;
 using LookingPromos.SharedKernel.Models;
 using MassTransit;
+using MongoDB.Bson;
 
 namespace LookingPromos.Worker.Application.Networks.Consumers;
 
@@ -18,13 +19,13 @@ public sealed class GetNetworksEventConsumer(
     {
         var networkId = context.Message.NetworkId;
 
-        var network = await networkRepository.GetByIdAsync(networkId, context.CancellationToken);
+        var network = await networkRepository.GetByIdAsync(ObjectId.Parse(networkId), context.CancellationToken);
 
         if (network == null)
         {
             var error = new Error("Network not found", $"Network with id {networkId} not found", ErrorType.Failure);
 
-            await context.RespondAsync(Result.Failure<Network>(error, HttpStatusCode.NotFound));
+            await context.RespondAsync(Result.Failure(error, HttpStatusCode.NotFound));
 
             return;
         }

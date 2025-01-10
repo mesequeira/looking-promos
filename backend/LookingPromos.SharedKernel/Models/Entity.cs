@@ -1,3 +1,6 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
 namespace LookingPromos.SharedKernel.Models;
 
 public class Entity : AggregateRoot
@@ -5,7 +8,8 @@ public class Entity : AggregateRoot
     /// <summary>
     /// The main identifier of the entity.
     /// </summary>
-    public long Id { get; set; }
+    [BsonId]
+    public ObjectId Id { get; set; } = default!;
     
     private DateTime? _createdAt;
 

@@ -1,7 +1,7 @@
 ﻿namespace LookingPromos.SharedKernel.Domain.Networks.Enums;
 
-public enum NetworkVariants
+public class NetworkVariants
 {
-    Galicia = 3,
+    public const string Galicia = "67806200f5b8ab15e984fae4";
     
 }

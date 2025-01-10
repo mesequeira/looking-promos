@@ -13,13 +13,13 @@ public class CategoryFactory(
     
     public async Task<bool> CreateStrategyAsync(Category category, CancellationToken cancellationToken = default)
     {
-        var networkId = category.NetworkId;
+        var networkId = category.NetworkId.ToString();
 
         var strategy = strategies.FirstOrDefault(strategy =>
         {
             return strategy switch
             {
-                GaliciaStrategy => networkId == (long)NetworkVariants.Galicia,
+                GaliciaStrategy => networkId == NetworkVariants.Galicia,
                 _ => false
             };
         });

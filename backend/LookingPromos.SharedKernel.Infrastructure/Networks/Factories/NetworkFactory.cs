@@ -11,13 +11,13 @@ public sealed class NetworkFactory(IEnumerable<INetworkStrategy> strategies)
 {
     public async Task<bool> CreateStrategyAsync(Network network, CancellationToken cancellationToken = default)
     {
-        var networkId = network.Id;
+        var networkId = network.Id.ToString();
 
         var strategy = strategies.FirstOrDefault(strategy =>
         {
             return strategy switch
             {
-                GaliciaStrategy => networkId == (long)NetworkVariants.Galicia,
+                GaliciaStrategy => networkId == NetworkVariants.Galicia,
                 _ => false
             };
         });

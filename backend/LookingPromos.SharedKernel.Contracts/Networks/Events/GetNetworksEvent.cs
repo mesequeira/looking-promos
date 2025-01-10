@@ -1,3 +1,3 @@
 ﻿namespace ClaLookingPromos.SharedKernel.Contracts.Networks.Events;
 
-public record GetNetworksEvent(long NetworkId);
+public record GetNetworksEvent(string NetworkId);

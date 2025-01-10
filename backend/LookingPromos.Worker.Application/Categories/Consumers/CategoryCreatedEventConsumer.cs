@@ -5,6 +5,7 @@ using LookingPromos.SharedKernel.Domain.Categories.Factories;
 using LookingPromos.SharedKernel.Domain.Categories.Repositories;
 using LookingPromos.SharedKernel.Models;
 using MassTransit;
+using MongoDB.Bson;
 
 namespace LookingPromos.Worker.Application.Categories.Consumers;
 
@@ -18,7 +19,7 @@ public sealed class CategoryCreatedEventConsumer(
     {
         var categoryId = context.Message.CategoryId;
         
-        var category = await categoryRepository.GetWithNetworkAssociationAsync(categoryId, context.CancellationToken);
+        var category = await categoryRepository.GetWithNetworkAssociationAsync(ObjectId.Parse(categoryId), context.CancellationToken);
         
         if (category == null)
         {

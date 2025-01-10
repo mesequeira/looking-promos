@@ -3,7 +3,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ConnectionStrings__DefaultConnection=Server=${DATABASE_SERVER};Database=${DATABASE_INSTANCE};User Id=${DATABASE_USER};Password=${DATABASE_PASSWORD};MultipleActiveResultSets=true;TrustServerCertificate=true
+      - MongoDbConnectionOptions__ConnectionString=${DATABASE_URI}
+      - MongoDbConnectionOptions__DatabaseName=${DATABASE_INSTANCE}
       - MessageBrokerOptions__Username=${RABBITMQ_USER}
       - MessageBrokerOptions__Password=${RABBITMQ_PASSWORD}
       - MessageBrokerOptions__ConnectionString=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
@@ -16,7 +17,8 @@ services:
   lookingpromos.worker:
     environment:
       - DOTNET_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=${DATABASE_SERVER};Database=${DATABASE_INSTANCE};User Id=${DATABASE_USER};Password=${DATABASE_PASSWORD};MultipleActiveResultSets=true;TrustServerCertificate=true
+      - MongoDbConnectionOptions__ConnectionString=${DATABASE_URI}
+      - MongoDbConnectionOptions__DatabaseName=${DATABASE_INSTANCE}
       - MessageBrokerOptions__Username=${RABBITMQ_USER}
       - MessageBrokerOptions__Password=${RABBITMQ_PASSWORD}
       - MessageBrokerOptions__ConnectionString=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
@@ -29,15 +31,3 @@ services:
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
-  
-  sqlserverdb:
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${DATABASE_PASSWORD}
-      - MSSQL_PID=Express
-    ports:
-      - 1433:1433
-    volumes:
-      - ${APPDATA}/Microsoft/SQLServer/data:/var/opt/mssql/data
-      - ${APPDATA}/Microsoft/SQLServer/log:/var/opt/mssql/log
-      - ${APPDATA}/Microsoft/SQLServer/secrets:/var/opt/mssql/secrets

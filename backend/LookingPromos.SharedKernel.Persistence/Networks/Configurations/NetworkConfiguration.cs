@@ -1,6 +1,7 @@
 ﻿using LookingPromos.SharedKernel.Domain.Networks.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace LookingPromos.SharedKernel.Persistence.Networks.Configurations;
 
@@ -10,9 +11,9 @@ public class NetworkConfiguration : IEntityTypeConfiguration<Network>
     {
         // Configuración para Network
         builder
-            .ToTable("Networks")
+            .ToCollection("networks")
             .HasKey(n => n.Id);
-
+        
         builder
             .Property(n => n.Name)
             .IsRequired()

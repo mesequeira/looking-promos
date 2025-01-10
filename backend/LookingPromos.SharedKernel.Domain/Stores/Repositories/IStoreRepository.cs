@@ -3,7 +3,4 @@ using LookingPromos.SharedKernel.Models;
 
 namespace LookingPromos.SharedKernel.Domain.Stores.Repositories;
 
-public interface IStoreRepository : IRepository<Store>
-{
-    Task<bool> MergeAsync(IEnumerable<Store> stores, CancellationToken cancellationToken = default);
-}
+public interface IStoreRepository : IRepository<Store>;

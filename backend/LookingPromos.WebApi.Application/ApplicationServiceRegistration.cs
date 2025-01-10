@@ -21,7 +21,7 @@ public static class ApplicationServiceRegistration
             config.RegisterServicesFromAssembly(ApplicationAssemblyReference.Assembly);
             
             config.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
-            config.AddOpenBehavior(typeof(TransactionalPipelineBehavior<,>));
+            // config.AddOpenBehavior(typeof(TransactionalPipelineBehavior<,>));
         });
 
         services.AddAutoMapper(ApplicationAssemblyReference.Assembly);

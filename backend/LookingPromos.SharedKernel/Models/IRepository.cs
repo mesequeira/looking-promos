@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AutoMapper;
+using MongoDB.Bson;
 
 namespace LookingPromos.SharedKernel.Models;
 
@@ -28,13 +29,17 @@ public interface IRepository<TEntity>
         Expression<Func<TEntity, bool>>? predicate = null
     );
 
+    Task<List<TEntity>> GetAsync(CancellationToken cancellationToken = default);
+
+    Task InsertAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default);
+
     /// <summary>
     /// Gets an entity by its identifier asynchronously.
     /// </summary>
     /// <param name="id">The identifier of the entity.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the entity.</returns>
-    Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdAsync(ObjectId id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Inserts a new entity asynchronously.
@@ -59,18 +64,4 @@ public interface IRepository<TEntity>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Gets a DTO by the entity identifier asynchronously.
-    /// </summary>
-    /// <typeparam name="TDto">The type of the DTO.</typeparam>
-    /// <param name="id">The identifier of the entity.</param>
-    /// <param name="configurationProvider">The AutoMapper configuration provider.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains the DTO.</returns>
-    Task<TDto?> GetByIdProjectionAsync<TDto>(
-        long id,
-        IConfigurationProvider configurationProvider,
-        CancellationToken cancellationToken = default
-    );
 }
